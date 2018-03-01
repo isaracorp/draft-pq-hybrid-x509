@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC2986 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2986.xml">
+<!ENTITY RFC5280 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5280.xml">
+]>
+<?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?> <!-- used by XSLT processors -->
+<!-- OPTIONS, known as processing instructions (PIs) go here. -->
+<!-- For a complete list and description of PIs,
+     please see http://xml.resource.org/authoring/README.html. -->
+<!-- Below are generally applicable PIs that most I-Ds might want to use. -->
+<?rfc strict="yes" ?> <!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC): -->
+<?rfc toc="yes"?> <!-- generate a ToC -->
+<?rfc tocdepth="3"?> <!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references: -->
+<?rfc symrefs="yes"?> <!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?> <!-- sort the reference entries alphabetically -->
+<!-- control vertical white space: 
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?> <!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?> <!-- keep one blank line between list items -->
+<!-- end of popular PIs -->
+<rfc  category="std" docName="draft-truskovsky-lamps-pq-hybrid-x509-00" ipr="trust200902">
+  <front>
+    <title abbrev="MPKAC">Multiple Public-Key Algorithm X.509 Certificates</title>
+    <author fullname="Alexander Truskovsky" initials="A" surname="Truskovsky">
+      <organization>ISARA Corporation</organization>
+      <address>
+        <postal>
+      <street>560 Westmount Rd N</street>
+      <city>Waterloo</city>
+      <region>Ontario</region>
+      <code>N2L 2Y6</code>
+      <country>Canada</country>
+        </postal>
+<!-- <phone/> -->
+<!-- <facsimile/> -->
+      <email>alexander.truskovsky@isara.com</email>
+<!-- <uri/> -->
+      </address>
+    </author>
+    <author fullname="Philip Lafrance" initials="P" surname="Lafrance">
+      <organization>ISARA Corporation</organization>
+      <address>
+        <postal>
+      <street>560 Westmount Rd N</street>
+      <city>Waterloo</city>
+      <region>Ontario</region>
+      <code>N2L 0A9</code>
+      <country>Canada</country>
+        </postal>
+<!-- <phone/> -->
+<!-- <facsimile/> -->
+      <email>philip.lafrance@isara.com</email>
+<!-- <uri/> -->
+      </address>
+    </author>
+    <author fullname="Daniel Van Geest" initials="D" surname="Van Geest">
+      <organization>ISARA Corporation</organization>
+      <address>
+        <postal>
+      <street>560 Westmount Rd N</street>
+      <city>Waterloo</city>
+      <region>Ontario</region>
+      <code>N2L 0A9</code>
+      <country>Canada</country>
+        </postal>
+<!-- <phone/> -->
+<!-- <facsimile/> -->
+      <email>daniel.vangeest@isara.com</email>
+<!-- <uri/> -->
+      </address>
+    </author>
+    <author fullname="Scott Fluhrer" initials="S" surname="Fluhrer">
+      <organization>Cisco Systems</organization>
+      <address>
+        <postal>
+      <street>170 West Tasman Drive</street>
+      <city>San Jose</city>
+      <region>CA</region>
+      <code>95134</code>
+      <country>USA</country>
+        </postal>
+<!-- <phone/> -->
+<!-- <facsimile/> -->
+      <email>sfluhrer@cisco.com</email>
+<!-- <uri/> -->
+      </address>
+    </author>
+    <author fullname="Panos Kampanakis" initials="P" surname="Kampanakis">
+      <organization>Cisco Systems</organization>
+      <address>
+        <postal>
+      <street>170 West Tasman Drive</street>
+      <city>San Jose</city>
+      <region>CA</region>
+      <code>95134</code>
+      <country>USA</country>
+        </postal>
+<!-- <phone/> -->
+<!-- <facsimile/> -->
+      <email>pkampana@cisco.com</email>
+<!-- <uri/> -->
+      </address>
+    </author>
+    <author fullname="Mike Ounsworth" initials="M" surname="Ounsworth">
+      <organization>Entrust Datacard, Ltd</organization>
+      <address>
+        <postal>
+      <street>1000 Innovation Drive</street>
+      <city>Kanata</city>
+      <region>Ontario</region>
+      <code>K2K 3E7</code>
+      <country>Canada</country>
+        </postal>
+<!-- <phone/> -->
+<!-- <facsimile/> -->
+      <email>mike.ounsworth@entrustdatacard.com</email>
+<!-- <uri/> -->
+      </address>
+    </author>
+    <author fullname="Serge Mister" initials="S" surname="Mister">
+      <organization>Entrust Datacard, Ltd</organization>
+      <address>
+        <postal>
+      <street>1000 Innovation Drive</street>
+      <city>Kanata</city>
+      <region>Ontario</region>
+      <code>K2K 3E7</code>
+      <country>Canada</country>
+        </postal>
+<!-- <phone/> -->
+<!-- <facsimile/> -->
+      <email>serge.mister@entrustdatacard.com</email>
+<!-- <uri/> -->
+      </address>
+    </author>
+    <date year="2018" />
+      <area>Security</area>
+      <workgroup>LAMPS</workgroup>
+      <keyword>PKIX</keyword>
+      <keyword>hybrid</keyword>
+      <keyword>post-quantum</keyword>
+      <keyword>x509</keyword>
+    <abstract>
+      <t>
+This document describes a method of embedding alternative sets of cryptographic materials into X.509v3 digital certificates, X.509v2 Certificate Revocation Lists (CRLs), and PKCS #10 Certificate Signing Requests (CSRs).  The embedded alternative cryptographic materials allow a Public Key Infrastructure (PKI) to use multiple cryptographic algorithms in a single object, and allow it to transition to the new cryptographic algorithms while maintaining backwards compatibility with systems using the existing algorithms.  Three X.509 extensions and three PKCS #10 attributes are defined, and the signing and verification procedures for the alternative cryptographic material contained in the extensions and attributes are detailed.
+      </t>
+    </abstract>
+  </front>
+  <middle>
+    <section title="Introduction">
+      <t>
+Modern Public Key Infrastructure (PKI) extensively relies on classical signature algorithms such as RSA or ECDSA to achieve secure authentication.  The security of these algorithms is based on the time-tested difficulty of certain number-theoretic problems.  However, it is well known that such schemes offer insufficient security against an adversary in possession of a universal quantum computer.  Such an adversary can efficiently recover the private key from the public key and impersonate any entity in the system -- even a root Certification Authority (CA).  Hence, it is necessary to upgrade these PKIs to utilize algorithms that are secure against such adversaries.
+      </t>
+      <t>
+An obvious solution is for relying parties to require multiple certificated to establish trust in an entity.  One could theoretically continue to use certificates as they currently are and introduce separate certificates that utilize the new algorithms.  However, managing different cryptographic algorithms within a single PKI in this way requires multiple certificate chains.  This would greatly increase the complexity of the already complex system.  Furthermore, some systems rely on physical solutions for credential storage.  These physical solutions may be limited in terms of capacity as well as in terms of how such systems are interacted with.  Instead, it is far simpler to keep only a single identity and employ a single certificate chain for each user.
+      </t>
+      <t>
+The goal of this document is to profile new X.509v3 certificate extensions, X.509v2 CRL extensions and PKCS #10 CSR attributes that facilitate the use of a simple and efficient approach for executing this upgrade.  A key design requirement for this approach is to not affect the behavior of non-upgraded systems and ensure they can process any new attributes or extensions without breaking.
+      </t>
+      <t>
+By placing an alternative public key and alternative signature into custom extensions, one effectively embeds multiple certificate chains within a single chain.  By utilizing these multiple public-key algorithm certificates, legacy applications can continue using their current choices of cryptographic algorithms and upgraded applications can use new algorithms while remaining interoperable with the legacy systems.
+      </t>
+      <t>
+It is useful to observe that even though the motivation for this document is to upgrade PKIs to use quantum-safe cryptography, the same methodology can be used to upgrade such systems to any new algorithm.  For this reason, this document does not specify that quantum-safe algorithms are the new technology the PKI is being upgraded to use.
+      </t>
+      <t>
+The remainder of this document is organized as follows.
+      </t>
+      <t>
+Section 2 profiles the three new PKCS #10 attributes and three new X.509 extensions.  Sections 3, 4 and 5 profile methods for signing and verifying CSRs, certificates and CRLs respectively using the new extensions.
+      </t>
+      <section title="Requirements Language">
+      <t>
+        The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+        "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in
+        this document are to be interpreted as described in
+        <xref target="RFC2119"/>.
+      </t>
+      </section> <!-- Requirements Language -->
+      <section title="Terminology">
+        <t>
+          The following terms are defined:
+          <list style="symbols">
+            <t>
+alternative algorithm: The algorithm, whose usage is profiled in this document, which can be used to sign and verify a certificate instead of, or in addition to, the conventional algorithm.
+            </t>
+            <t>
+alternative [public, private] key: The keys, whose usage is profiled in this document, which can be used to create or verify a signature instead of, or in addition to, the conventional keys.
+            </t>
+            <t>
+alternative signature: The signature, whose usage is profiled in this document, which can be used to validate a certificate instead of, or in addition to, the conventional signature.
+            </t>
+            <t>
+conventional algorithm: The algorithm specified in the signatureAlgorithm field of an X.509v3 certificate.
+            </t>
+            <t>
+conventional [public, private] key: The key used to create or verify a conventional signature in an X.509v3 certificate.
+            </t>
+            <t>
+conventional signature: The value specified in the signature field of an X.509v3 certificate.
+            </t>
+            <t>
+multiple public-key algorithm certificate: A certificate which is equipped with the extensions introduced in this document. Thus, the certificate is signed and can be verified using two different public-key algorithms. One public-key algorithm (the "conventional" one) uses the keys, signatures and algorithms specified in the standard X.509v3 fields. The other ("alternative") public-key algorithm uses the keys, signatures and algorithms in the extensions defined in this document.
+            </t>
+            <t>
+upgraded [application, system]: An application or system which is capable of understanding and using the extensions introduced in this document.
+            </t>
+          </list>
+        </t>
+      </section> <!-- Terminology -->
+    </section> <!-- Introduction -->
+    <section title="Alternative Public-Key Algorithm Objects">
+      <section title="OIDs">
+        <t>
+The following OIDs are used to identify the CSR attributes and X.509v3 extensions defined in the following sections.
+        </t>
+        <figure><artwork><![CDATA[
+id-subjectAltPublicKeyInfo  OBJECT IDENTIFIER  ::=  { TBD }
+
+id-altSignatureAlgorithm    OBJECT IDENTIFIER  ::=  { TBD }
+
+id-altSignatureValue        OBJECT IDENTIFIER  ::=  { TBD }
+        ]]></artwork></figure>
+      </section> <!-- OIDs -->
+      <section title="CSR Attributes">
+        <t>
+Three new CSR attributes are used to submit an alternative public key for certification.  Each of these attributes mirror existing fields within a CSR and serve the same purpose as those fields, but with the alternative algorithms. An entity creating a CSR MUST include either all three of these attributes or none.
+        </t>
+        <section title="Subject Alt Public Key Info Attribute">
+          <t>
+The Subject Alt Public Key Info Attribute corresponds to the SubjectPublicKeyInfo type defined in Section 4.1 of <xref target="RFC2986"/>.  This attribute carries information about the alternative public key being certified.  The information also identifies the entity's alternative public-key algorithm (and any associated parameters).
+          </t>
+          <t>
+This attribute is identified using the id-subjectAltPublicKeyInfo OID.
+          </t>
+          <figure><artwork><![CDATA[
+SubjectAltPublicKeyInfoAttr ATTRIBUTE  ::=  {
+     WITH SYNTAX SubjectPublicKeyInfo
+     ID id-subjectAltPublicKeyInfo }
+          ]]></artwork></figure>
+        </section> <!-- Subject Alt Public Key Info Attribute -->
+        <section title="Alt Signature Algorithm Attribute">
+          <t>
+The Alt Signature Algorithm attribute corresponds to the signatureAlgorithm field of the CertificationRequest type described in Section 4.2 of <xref target="RFC2986"/>.  This attribute contains the identifier for the alternative cryptographic algorithm used by the requesting entity to sign the CertificationRequestInfo.
+          </t>
+          <t>
+This attribute is identified using the id-altSignatureAlgorithm OID.
+          </t>
+          <figure><artwork><![CDATA[
+AltSignatureAlgorithmAttr ATTRIBUTE  ::=  {
+     WITH SYNTAX AlgorithmIdentifier
+     ID id-altSignatureAlgorithm }
+          ]]></artwork></figure>
+        </section> <!-- Alt Signature Algorithm Attribute -->
+        <section title="Alt Signature Value Attribute">
+          <t>
+The Alt Signature Value attribute corresponds to the signature field of the CertificationRequest type described in Section 4.2 of <xref target="RFC2986"/>.  This attribute contains a digital signature computed upon the ASN.1 DER encoded PreCertificationRequestInfo as described in Section 3 of this document.
+          </t>
+          <t>
+By generating this alternative signature, a certification request subject proves possession of the alternative private key.
+          </t>
+          <t>
+This attribute is identified using the id-altSignatureValue OID.
+          </t>
+          <figure><artwork><![CDATA[
+AltSignatureValueAttr ATTRIBUTE  ::=  {
+     WITH SYNTAX BIT STRING
+     EQUALITY MATCHING RULE bitStringMatch
+     ID id-altSignatureValue }
+          ]]></artwork></figure>
+        </section> <!-- Alt Signature Value Attribute -->
+      </section> <!-- CSR Attributes -->
+      <section title="X.509v3 Extensions">
+          <t>
+Three new X.509v3 extensions are used to authenticate a certificate using alternative algorithms.  Each of these extensions mirror existing fields within an X.509v3 certificate and serve the same purpose as those fields, but with the alternative algorithms.
+          </t>
+        <section title="Subject Alt Public Key Info Extension">
+          <t>
+The Subject Alt Public Key Info extension corresponds to the Subject Public Key Info field described in Section 4.1.2.7 of <xref target="RFC5280"/>.  This extension carries the alternative public key, and identifies the algorithm with which the key is used.
+          </t>
+          <t>
+This extension is identified using the id-subjectAltPublicKeyInfo OID.
+          </t>
+          <figure><artwork><![CDATA[
+SubjectAltPublicKeyInfoExt  ::=  SEQUENCE  {
+     algorithm                  AlgorithmIdentifier,
+     subjectAltPublicKey        BIT STRING }
+          ]]></artwork></figure>
+        </section> <!-- Subject Alt Public Key Info Extension -->
+        <section title="Alt Signature Algorithm Extension">
+          <t>
+The Alt Signature Algorithm extension corresponds to the signature field described in Section 4.1.2.3 of <xref target="RFC5280"/>.  It also corresponds to the signatureAlgorithm field described in Section 4.1.1.2 of <xref target="RFC5280"/> since both those fields have the same values.  This extension contains the identifier for the alternative digital signature algorithm used by the CA to sign the preTBSCertificate.
+          </t>
+          <t>
+This extension is identified using the id-altSignatureAlgorithm OID.
+          </t>
+          <figure><artwork><![CDATA[
+AltSignatureAlgorithmExt  ::=  AlgorithmIdentifier
+          ]]></artwork></figure>
+        </section> <!-- Alt Signature Algorithm Extension -->
+        <section title="Alt Signature Value Extension">
+          <t>
+The Alt Signature Value extension corresponds to the signatureValue field described in Section 4.1.1.3 of <xref target="RFC5280"/>.  This extension contains a digital signature computed upon the ASN.1 DER encoded preTBSCertificate as described in Section 4.
+          </t>
+          <t>
+By generating this alternative signature, a CA certifies the validity of the preTBSCertificate data.  In particular, the CA certifies the binding between the alternative public key material and the subject of the certificate.
+          </t>
+          <t>
+This extension is identified using the id-altSignatureValue OID.
+          </t>
+          <figure><artwork><![CDATA[
+AltSignatureValueExt  ::=  BIT STRING
+          ]]></artwork></figure>
+        </section> <!-- Alt Signature Value Extension -->
+      </section> <!-- X.509v3 Extensions -->
+    </section> <!-- Alternative Public-Key Algorithm Objects -->
+    <section title="Multiple Public-Key Algorithm Certificate Signing Requests">
+      <t>
+A Certificate Signing Request (CSR) is a sequence of three required fields as defined in Section 4.2 of <xref target="RFC2986"/>. 
+      </t>
+      <figure><artwork><![CDATA[
+CertificationRequest  ::=  SEQUENCE  {
+     certificationRequestInfo    CertificationRequestInfo,
+     signatureAlgorithm          AlgorithmIdentifier,
+     signature                   BIT STRING }
+      ]]></artwork></figure>
+      <t>
+A CSR's signature is calculated on the ASN.1 DER encoding of the CertificationRequestInfo object as defined in Section 4.2 of <xref target="RFC2986"/>.
+      </t>
+      <figure><artwork><![CDATA[
+CertificationRequestInfo  ::=  SEQUENCE  {
+     version       INTEGER  { v1(0) } (v1,...),
+     subject       Name,
+     subjectPKInfo SubjectPublicKeyInfo{{ PKInfoAlgorithms }},
+     attributes    [0] Attributes{{ CRIAttributes }} }
+      ]]></artwork></figure>
+      <t>
+The alternative signature is calculated on the ASN.1 DER encoding of the identical PreCertificationRequestInfo object.
+      </t>
+      <figure><artwork><![CDATA[
+PreCertificationRequestInfo  ::=  SEQUENCE  {
+     version       INTEGER  { v1(0) } (v1,...),
+     subject       Name,
+     subjectPKInfo SubjectPublicKeyInfo{{ PKInfoAlgorithms }},
+     attributes    [0] Attributes{{ CRIAttributes }} }
+      ]]></artwork></figure>
+      <t>
+The PreCertificationRequestInfo type is the same as the CertificationRequestInfo type, however the PreCertificationRequestInfo object will have different attributes than the CertificationRequestInfo. Specifically, the CertificationRequestInfo will include the AltSignatureValueAttr attribute, while the PreCertificationRequestInfo will not.
+      </t>
+      <section title="Creating Multiple Public-Key Algorithm CSRs">
+        <t>
+A multiple public-key algorithm CSR requires the applicant to generate two key pairs: one for the old algorithm (the conventional key pair), and another for the new algorithm (the alternative key pair).  All actions taken by the applicant with regards to the conventional algorithm and key pair are unchanged during this process.  Additional attributes are populated to prove that the applicant is in possession of the alternative private key.
+        </t>
+        <t>
+The PreCertificationRequestInfo object MUST contain the SubjectAltPublicKeyInfoAttr attribute carrying the alternative public key and algorithm for the CSR being created.
+        </t>
+        <t>
+The PreCertificationRequestInfo object MUST contain the AltSignatureAlgorithmAttr attribute, which specifies the algorithm identifier for the algorithm used to sign the PreCertificationRequestInfo object.
+        </t>
+        <t>
+The alternative signature of the PreCertificationRequestInfo MUST be calculated using the alternative private key of the certificate request subject, which is the private key associated with the public key found in the subject's SubjectAltPublicKeyInfoAttr attribute.
+        </t>
+        <t>
+After the alternative signature is calculated, the alternative signature MUST be added as an AltSignatureValueAttr attribute to create the CertificationRequestInfo object.
+        </t>
+        <t>
+The process of signing a multiple public-key algorithm CSR as described above can be summarized as follows:
+        </t>
+        <t>
+          <list style="letters">
+            <t>
+Create a PreCertificationRequestInfo object, which is populated with all the data to be signed by the alternative private key, including the SubjectAltPublicKeyInfoAttr and AltSignatureAlgorithmAttr attributes.
+            </t>
+            <t>
+Calculate the alternative signature on the DER encoding of the PreCertificationRequestInfo, using the certificate request subject's alternative private key with the algorithm specified in the AltSignatureAlgorithmAttr attribute.
+            </t>
+            <t>
+Convert the PreCertificationRequestInfo to a CertificationRequestInfo by adding the calculated alternative signature to the PreCertificationRequestInfo object using the AltSignatureValueAttr attribute.
+            </t>
+            <t>
+As per <xref target="RFC2986"/>, calculate the conventional signature using the certificate request subject's conventional private key and create the CertificationRequest from the certificationRequestInfo, signatureAlgorithm and signature.
+            </t>
+          </list>
+        </t>
+        <t>
+An upgraded system MAY issue both multiple public-key algorithm and single public-key algorithm CSRs depending on their policies.  If the system issues a single public-key algorithm CSR, then that CSR MUST NOT contain any of the three attributes profiled in this section.
+        </t>
+      </section> <!-- Creating Multiple Public-Key Algorithm CSRs -->
+      <section title="Verifying Multiple Public-Key Algorithm CSRs">
+        <t>
+The certificate issuer verifies the alternative signature of the multiple public-key algorithm CSR by reconstructing the PreCertificationRequestInfo object and using its ASN.1 DER encoding, alternative public key and alternative signature algorithm to verify the signature.
+        </t>
+        <t>
+To verify the alternative signature of a multiple public-key algorithm CSR, the following steps are taken:
+        </t>
+        <t>
+          <list style="letters">
+            <t>
+ASN.1 DER decode the certificationRequestInfo field of the CertificationRequest to get a CertificationRequestInfo object.
+            </t>
+            <t>
+Remove the AltSignatureValueAttr attribute from the CertificationRequestInfo object and set aside the alternative signature.  The object is now the same as the PreCertificationRequestInfo which the signature was generated on.
+            </t>
+            <t>
+ASN.1 DER encode the PreCertificationRequestInfo object.
+            </t>
+            <t>
+Using the algorithm specified in the AltSignatureAlgorithmAttr attribute of the PreCertificationRequestInfo, the alternative public key from the CSR's SubjectAltPublicKeyInfoAttr attribute and the ASN.1 DER encoded PreCertificationRequestInfo, verify the alternative signature from (b).
+            </t>
+          </list>
+        </t>
+        <t>
+During the process of ASN.1 DER decoding the CertificationRequestInfo, removing the AltSignatureValueAttr attribute from the PreCertificationRequestInfo, and ASN.1 DER encoding the PreCertificationRequestInfo, the relative ordering of the remaining attributes is not modified.  This is due to the DER encoding rules applied during signature generation as specified in RFC2986.  Thus, the resulting ASN.1 DER encoded PreCertificationRequestInfo is identical to the one the issuer used to generate the alternative signature.
+        </t>
+      </section> <!-- Verifying Multiple Public-Key Algorithm CSRs -->
+    </section> <!-- Multiple Public-Key Algorithm Certificate Signing Requests -->
+    <section title="Multiple Public-Key Algorithm Certificates">
+      <t>
+An X.509 digital certificate is a sequence of three fields as defined in <xref target="RFC5280"/>.
+      </t>
+      <figure><artwork><![CDATA[
+Certificate  ::=  SEQUENCE  {
+     tbsCertificate       TBSCertificate,
+     signatureAlgorithm   AlgorithmIdentifier,
+     signatureValue       BIT STRING }
+      ]]></artwork></figure>
+      <t>
+An X.509v3 certificate's signature is calculated on the ASN.1 DER encoding of the TBSCertificate object as defined in Section 4.1 of <xref target="RFC5280"/>.  In this way, a CA certifies the validity of the information in the tbsCertificate field, in particular the binding between the conventional public key material and the subject of the certificate.
+      </t>
+      <t>
+The alternative signature is calculated on the ASN.1 DER encoding of the similar, but not identical, PreTBSCertificate defined below.  This signature also certifies the validity of the information in the tbsCertificate field. In particular, the binding between the alternative public key material and the subject of the certificate is validated.
+      </t>
+      <figure><artwork><![CDATA[
+PreTBSCertificate  ::=  SEQUENCE  {
+     version         [0]  EXPLICIT Version DEFAULT v1,
+     serialNumber         CertificateSerialNumber,
+     issuer               Name,
+     validity             Validity,
+     subject              Name,
+     subjectPublicKeyInfo SubjectPublicKeyInfo,
+     issuerUniqueID  [1]  IMPLICIT UniqueIdentifier OPTIONAL,
+                          -- If present, version MUST be v2 or v3
+     subjectUniqueID [2]  IMPLICIT UniqueIdentifier OPTIONAL,
+                          -- If present, version MUST be v2 or v3
+     extensions      [3]  EXPLICIT Extensions OPTIONAL
+                          -- If present, version MUST be v3
+     }
+      ]]></artwork></figure>
+      <t>
+The PreTBSCertificate type is similar to the TBSCertificate type, except that the PreTBSCertificate does not include the signature field (the third element in the TBSCertificate sequence).  In a TBSCertificate the signature field contains the AlgorithmIdentifier of the algorithm which will be used to sign the final certificate, and this value might not be known at the time that the alternative signature is calculated.  Additionally, since the AlgorithmIdentifier of the signature field is associated with the final signatureValue field in the certificate, it is outside the scope of the alternative public-key algorithm and does not need to be protected by the alternative signature.
+      </t>
+      <t>
+The PreTBSCertificate object also does not contain the AltSignatureValueExt extension in its extension list, while the TBSCertificate will.  Since the alternative signature is calculated on the encoding of the PreTBSCertificate it cannot be included in the PreTBSCertificate.
+      </t>
+      <section title="Creating Multiple Public-Key Algorithm Certificates">
+        <t>
+If a CA is issuing a subject certificate and the issuer certificate or root of trust contains an alternative public key, then the CA SHOULD add an alternative signature to the subject certificate.  Failure to do so could result in a verifier rejecting the certificate as being malformed, especially if the verifier is concerned about quantum-enabled adversaries.  This is discussed further in Section 8.1.
+        </t>
+        <t>
+A multiple public-key algorithm certificate MAY contain the SubjectAltPublicKeyInfoExt extension.  If the certificate's subject has an alternative public key which they wish to bind to their identity, then the public key and algorithm MUST be placed in the SubjectAltPublicKeyInfoExt extension.  However, if the certificate's subject has no such alternative public key (e.g. the subject's application has not been upgraded to support multiple public-key algorithms) then the SubjectAltPublicKeyInfoExt extension will not be added to the certificate.
+        </t>
+        <t>
+If a CA is issuing a certificate with an alternative signature, the extensions field of the PreTBSCertificate MUST contain the AltSignatureAlgorithmExt extension, which specifies the algorithm identifier for the algorithm used to sign the PreTBSCertificate.
+        </t>
+        <t>
+The alternative signature of the PreTBSCertificate MUST be calculated using the alternative private key of the Issuer, which is the private key associated with the public key found in the Issuer's SubjectAltPublicKeyInfoExt extension.
+        </t>
+        <t>
+After the alternative signature is calculated, the alternative signature MUST be added as an AltSignatureValueExt extension to the extensions list of the PreTBSCertificate, resulting in the TBSCertificate.
+        </t>
+        <t>
+The process of signing an X.509v3 multiple public-key algorithm certificate as described above can be summarized as follows:
+        </t>
+        <t>
+          <list style="letters">
+            <t>
+Create a PreTBSCertificate object, which is populated with all the data to be signed by the alternative private key, including the SubjectAltPublicKeyInfoExt and AltSignatureAlgorithmExt extensions.
+            </t>
+            <t>
+Calculate the alternative signature on the DER encoding of the PreTBSCertificate, using the Issuer's alternative private key with the algorithm specified in the AltSignatureAlgorithmExt extension.
+            </t>
+            <t>
+Add the calculated alternative signature to the PreTBSCertificate object using the AltSignatureValueExt extension.
+            </t>
+            <t>
+Convert the PreTBSCertificate to a TBSCertificate by adding the signature field and populating it with the algorithm identifier of the conventional algorithm to be used to sign the certificate.
+            </t>
+            <t>
+As per <xref target="RFC5280"/>, calculate the conventional signature using the conventional private key associated with the Issuer's certificate and create the certificate from the tbsCertificate, signatureAlgorithm and signature.
+            </t>
+          </list>
+        </t>
+        <t>
+If the upgraded CA's policy allows it to process single public-key algorithm CSRs and issue single public-key algorithm certificates, and the issuer's certificate has an alternative public key, and the CA receives a single-algorithm CSR, the CA SHOULD still include properly calculated AltSignatureValueExt and AltSignatureAlgorithmExt extensions in the certificate.  This ensures that when an upgraded system verifies the subject's certificate and sees that the issuer certificate contains the SubjectAltPublicKeyInfoExt extension that it will verify the subject's alternative signature.  Otherwise it might treat the subject's certificate as invalid.  This is discussed further in the Security Considerations section.
+        </t>
+        <t>
+Note - A certificate issuer would typically mark the SubjectAltPublicKeyInfoExt, AltSignatureAlgorithmExt and AltSignatureValueExt extensions as non-critical, allowing the multiple public-key algorithm certificate to be treated like a regular certificate by non-upgraded entities.  However, the issuer MAY mark the extensions as critical, for example if it is part of a PKI which requires entities to understand both the conventional and alternative signatures.
+        </t>
+      </section> <!-- Creating Multiple Public-Key Algorithm Certificates -->
+      <section title="Verifying Multiple Public-Key Algorithm Certificates">
+        <t>
+Users wishing to verify a multiple public-key algorithm certificate using the alternative public-key algorithm will need to convert the tbsCertificate field in the certificate to a PreTBSCertificate object identical to the PreTBSCertificate object which the issuer used to create the alternative signature.  Then the user can use the issuer's alternative public key with the alternative signature algorithm to verify the alternative signature of the PreTBSCertificate.
+        </t>
+        <t>
+To verify the alternative signature of the multiple public-key algorithm certificate, the following steps are taken:
+        </t>
+        <t>
+          <list style="letters">
+            <t>
+ASN.1 DER decode the tbsCertificate field of the certificate to get a TBSCertificate object.
+            </t>
+            <t>
+Remove the AltSignatureValueExt extension from the TBSCertificate object and set aside the alternative signature.
+            </t>
+            <t>
+Remove the signature field from the TBSCertificate object, converting it to a PreTBSCertificate object.
+            </t>
+            <t>
+ASN.1 DER encode the PreTBSCertificate object.
+            </t>
+            <t>
+Using the algorithm specified in the AltSignatureAlgorithmExt extension of the PreTBSCertificate, the alternative public key from the Issuer's SubjectAltPublicKeyInfoExt extension and the ASN.1 DER encoded PreTBSCertificate, verify the alternative signature from (b).
+            </t>
+          </list>
+        </t>
+        <t>
+The issuer's alternative public key comes from the issuing certificate's SubjectAltPublicKeyInfoExt extension, unless the issuer is a trust anchor.  In that case, the trust anchor's alternative public key may come from a self-signed certificate's SubjectAltPublicKeyInfoExt extension, or it may come from elsewhere.  <xref target="RFC5280"/> section 6.1.1 (d) lists the trust anchor information as including:
+        </t>
+        <t>
+          <list style="letters">
+            <t>
+the trusted issuer name,
+            </t>
+            <t>
+the trusted public key algorithm,
+            </t>
+            <t>
+the trusted public key, and
+            </t>
+            <t>
+optionally, the trusted public key parameters associated with the public key.
+            </t>
+          </list>
+        </t>
+        <t>
+When validating a multiple public-key algorithm certificate, the trust anchor information also includes:
+        </t>
+        <t>
+          <list style="letters">
+            <t>
+the trusted alternative public key algorithm,
+            </t>
+            <t>
+the trusted alternative public key, and
+            </t>
+            <t>
+optionally, the trusted alternative public key parameters associated with the alternative public key.
+            </t>
+          </list>
+        </t>
+        <t>
+During the process of ASN.1 DER decoding the TBSCertificate, removing the AltSignatureValueExt extension from the PreTBSCertificate and ASN.1 DER encoding the PreTBSCertificate, the relative ordering of the remaining extensions is not modified.  Thus, the resulting ASN.1 DER encoded PreTBSCertificate is identical to the one the issuer used to generate the alternative signature.
+        </t>
+        <t>
+A certificate that contains an AltSignatureValueExt extension but does not contain an AltSignatureAlgorithmExt extension cannot be verified under the alternative public-key algorithm and so SHOULD be rejected as being malformed.  Similarly, a certificate that contains an AltSignatureAlgorithmExt extension but does not contain an AltSignatureValueExt extension SHOULD be rejected.
+        </t>
+        <t>
+A certificate MAY have AltSignatureValueExt and AltSignatureAlgorithmExt extensions without having a SubjectAltPublicKeyInfoExt extension.  This case could arise if a non-upgraded subject requests a certificate from an upgraded CA who has a multiple public-key algorithm CA certificate.
+        </t>
+        <t>
+If an issuer certificate or root of trust has an alternative public key, but a subject certificate issued by the issuer certificate or root of trust doesn't contain an alternative signature then the verifier SHOULD reject the subject certificate.  This is especially important if the verifier is concerned about quantum-enabled adversaries.  This is discussed further in the Section 8.1.  Accepting such a subject certificate SHOULD be limited to cases where the verifier has been explicitly configured to ignore missing alternative signatures for a given issuing CA, for subject certificates matching a given wildcard, or similar whitelisting mechanisms.
+        </t>
+      </section> <!-- Verifying Multiple Public-Key Algorithm Certificates -->
+    </section> <!-- Multiple Public-Key Algorithm Certificates -->
+    <section title="Multiple Public-Key Algorithm Certificate Revocation Lists">
+      <t>
+In certain situations, certificates must be revoked and no longer used.  This can happen for a variety of reasons including, but not limited to: key compromise, CA compromise, or due to a change in affiliation.  Roughly speaking, Certificate Revocation Lists (CRLs) are authenticated lists of revoked certificates.
+      </t>
+      <t>
+An X.509v2 Certificate Revocation List (CRL) is a sequence of three fields as defined in <xref target="RFC5280"/>.
+      </t>
+      <figure><artwork><![CDATA[
+CertificateList  ::=  SEQUENCE  {
+    tbsCertList          TBSCertList,
+    signatureAlgorithm   AlgorithmIdentifier,
+    signatureValue       BIT STRING  }
+      ]]></artwork></figure>
+      <t>
+An X.509v2 CRL's signature is calculated on the ASN.1 DER encoding of the TBSCertList object as defined in Section 5.1 of <xref target="RFC5280"/>.
+      </t>
+      <t>
+The alternative signature is calculated on the ASN.1 DER encoding of the similar, but not identical, PreTBSCertList object defined here.
+      </t>
+      <figure><artwork><![CDATA[
+PreTBSCertList  ::=  SEQUENCE  {
+     version                 Version OPTIONAL,
+                                  -- if present, MUST be v2
+     issuer                  Name,
+     thisUpdate              Time,
+     nextUpdate              Time OPTIONAL,
+     revokedCertificates     SEQUENCE OF SEQUENCE  {
+          userCertificate         CertificateSerialNumber,
+          revocationDate          Time,
+          crlEntryExtensions      Extensions OPTIONAL
+                                   -- if present, version MUST be v2
+                               }  OPTIONAL,
+     crlExtensions           [0]  EXPLICIT Extensions OPTIONAL
+                                   -- if present, version MUST be v2
+                               }
+      ]]></artwork></figure>
+      <t>
+The PreTBSCertList object is similar to the TBSCertList object, except that the PreTBSCertList does not include the signature field (the second element in the TBSCertList sequence).  In a TBSCertList the signature field contains the AlgorithmIdentifier of the algorithm which will sign the final certificate revocation list, and this value might not be known at the time that the alternative signature is calculated.  Additionally, since the AlgorithmIdentifier of the signature field is associated with the final signatureValue field in the CRL, it is outside the scope of the alternative public-key algorithm and does not need to be protected by the alternative signature.
+      </t>
+      <t>
+The PreTBSCertList object also does not contain the AltSignatureValueExt extension in its extension list, while the TBSCertList will.  Since the alternative signature is calculated on the encoding of the PreTBSCertList, it cannot be included in the TBSCertList.
+      </t>
+      <t>
+If a multiple public-key algorithm certificate is revoked, whether because the classical key is compromised, the alternative key is compromised or or other reason, both the classical and alternative keys SHOULD be considered revoked.  This avoids any unneeded complexity in dealing with a certificate where one key is compromised but the other isn't.
+      </t>
+      <section title="Creating Multiple Public-Key Algorithm Certificate Revocation Lists">
+        <t>
+To create a multiple public-key algorithm CRL, one creates a CRL as specified in Section 5 of <xref target="RFC5280"/> and includes the additional extensions as specified in this section.
+        </t>
+        <t>
+If the CRL issuer's certificate has a SubjectAltPublicKeyInfoExt extension, the CRL SHOULD be created with an alternative signature.  Otherwise, some upgraded systems may fail to validate the CRL because it is not trusted under the alternative public-key algorithm.
+        </t>
+        <t>
+The extensions field of the PreTBSCertList MUST contain the AltSignatureAlgorithmExt extension, which specifies the algorithm identifier for the algorithm used to sign the PreTBSCertList.
+        </t>
+        <t>
+The alternative signature of the PreTBSCertList MUST be calculated using the alternative private key of the CRL issuer, which is the private key associated with the public key found in the CRL issuer X.509v3 certificate's SubjectAltPublicKeyInfoExt extension.
+        </t>
+        <t>
+After the alternative signature is calculated, the alternative signature MUST be added as an AltSignatureValueExt extension to the extensions list of the PreTBSCertList, resulting in the TBSCertList.
+        </t>
+        <t>
+The process of signing an X.509v2 multiple public-key algorithm CRL as described above can be summarized as follows:
+        </t>
+        <t>
+          <list style="letters">
+            <t>
+Create a TBSCertList object, which is populated with all the data to be signed by the alternative private key, including the AltSignatureAlgorithmExt extension.
+            </t>
+            <t>
+Calculate the alternative signature on the DER encoding of the PreTBSCertList, using the CRL issuer's alternative private key with the algorithm specified in the AltSignatureAlgorithmExt extension.
+            </t>
+            <t>
+Add the calculated alternative signature to the PreTBSCertList object using the AltSignatureValueExt extension.
+            </t>
+            <t>
+Convert the PreTBSCertList to a TBSCertList by adding the signature field and populating it with the algorithm identifier of the conventional algorithm to be used to sign the certificate.
+            </t>
+            <t>
+As per <xref target="RFC5280"/>, calculate the conventional signature using the conventional private key associated with the CRL issuer's certificate and create the CRL from the tbsCertList, signatureAlgorithm and signature.
+            </t>
+          </list>
+        </t>
+        <t>
+Note - A CRL issuer would typically mark the AltSignatureAlgorithmExt and AltSignatureValueExt extensions as non-critical, allowing the multiple public-key algorithm CRL to be treated like a regular CRL by non-upgraded entities.  However, the issuer may be part of a PKI which requires entities to understand both the conventional and alternative signatures, in which case it would mark the extensions as critical.
+        </t>
+      </section> <!-- Creating Multiple Public-Key Algorithm Certificate Revocation Lists -->
+      <section title="Verifying Multiple Public-Key Algorithm Certificate Revocation Lists">
+        <t>
+Users wishing to verify the alternative signature of a multiple public-key algorithm CRL will need to convert the tbsCertList field in the CRL to a PreTBSCertList identical to the PreTBSCertList which the issuer used to create the alternative signature.  Then the user can use the CRL issuer certificate's alternative public key with the alternative signature algorithm to verify the alternative signature of the PreTBSCertList.
+        </t>
+        <t>
+To verify the alternative signature of the multiple public-key algorithm CRL, the following steps are taken:
+        </t>
+        <t>
+          <list style="letters">
+            <t>
+ASN.1 DER decode the tbsCertList field of the certificate to get a TBSCertList object.
+            </t>
+            <t>
+Remove the AltSignatureValueExt extension from the TBSCertList object and set aside the alternative signature.
+            </t>
+            <t>
+Remove the signature field from the TBSCertList object, converting it to a PreTBSCertList object.
+            </t>
+            <t>
+ASN.1 DER encode the PreTBSCertList object.
+            </t>
+            <t>
+Using the algorithm specified in the AltSignatureAlgorithmExt extension of the PreTBSCertList, the alternative public key from the CRL issuer certificate's SubjectAltPublicKeyInfoExt extension and the ASN.1 DER encoded PreTBSCertList, verify the alternative signature from (b).
+            </t>
+          </list>
+        </t>
+        <t>
+During the process of ASN.1 DER decoding the TBSCertList, removing the AltSignatureValueExt extension from the PreTBSCertList and ASN.1 DER encoding the PreTBSCertList, the relative ordering of the remaining extensions will not be modified.  Thus, the resulting ASN.1 DER encoded PreTBSCertList is identical to the one the issuer used to generate the alternative signature.
+        </t>
+        <t>
+In addition to verifying the alternative signature of a CRL, an implementation also needs to validate the CRL issuer's certificate and the certificate chain it is a part of.  Implementations SHOULD use the same method as profiled in Section 6 of <xref target="RFC5280"/> with the following modifications to the CRL processing algorithm of that document's Section 6.3.3.  Step (f) of the CRL processing algorithm requires certificate path validation for the issuer of the complete CRL.  To validate multiple public-key algorithm CRLs, upgraded entities SHOULD additionally verify the alternative signatures along the path as described in Section 4.2 of this document. Step (g) of the CRL Processing algorithm requires the verification of a single signature on the complete CRL.  To verify multiple public-key algorithm CRLs, this step MUST be modified to instead verify dual signatures on the complete CRL.  Similarly, in step (h) of the same algorithm, if use-deltas is set and if the delta CRL is a multiple public-key algorithm CRL, then the verifying peer should validate the signature on the delta CRL via the method described above, and use standard practice otherwise - using the public key(s) validated in step (f).
+        </t>
+      </section> <!-- Verifying Multiple Public-Key Algorithm Certificate Revocation Lists -->
+    </section> <!-- Multiple Public-Key Algorithm Certificate Revocation Lists -->
+    <section anchor="Acknowledgements" title="Acknowledgements">
+      <t>
+      </t>
+    </section> <!-- Acknowledgements -->
+    <section anchor="IANA" title="IANA Considerations">
+      <t>
+Extensions in certificates and CRLs are identified using object Identifiers (OIDs).  The creation and delegation of these arcs is to be determined.
+      </t>
+    </section> <!-- IANA Considerations -->
+    <section anchor="Security" title="Security Considerations">
+      <t>
+Many of the security considerations for this document closely follow those of <xref target="RFC5280"/>.  However, the use of the extensions introduced in this document does bring rise to additional considerations.
+      </t>
+      <t>
+The motivation behind this document is to provide a method of upgrading PKIs and dependent systems to achieve quantum-safe state.  However, state-of-the-art quantum-safe signature schemes tend to have large signature or key sizes.  As such, their inclusion on CSRs, certificates, or CRLs means that the sizes of these data structures will significantly increase.  This could potentially cause problems in protocols or implementations expecting more reasonable sizes.  Even if enterprises choose instead to upgrade their PKI to new, but still classically secure signature algorithms, these algorithms can also be expected to have large signature or key sizes; often a by-product of an increased level of security is larger signatures or key sizes.
+      </t>
+      <t>
+There is a great deal of flexibility inherent to the use of the extensions introduced in this document.  Their design is such that a clean separation is made between the old and new signatures.  The new signatures have no dependency on the old signatures and no understanding of the new signatures is required to compute or verify the old signature.  As such, one could rely on the conventional signature only, the alternative signature only, or both, depending on the policies of the entity.
+      </t>
+      <t>
+It is paramount that all private keying material be kept secret; a subject covered in the Security Considerations section of <xref target="RFC5280"/>.  If the PKI is upgraded to use quantum-safe technologies, then it is of key importance to ensure that all private materials are protected against quantum-enabled adversaries as well.  How such a feat is accomplished is outside the scope of this document.  Additionally, issues such as re-keying or key management are outside the scope of this document.
+      </t>
+      <t>
+Typically, the SubjectAltPublicKeyInfoExt, AltSignatureAlgorithmExt and AltSignatureValueExt extensions will be marked as non-critical so that a non-upgraded system could treat a multiple public-key algorithm certificate or CSR as a conventional certificate.  However, a PKI could choose to enforce the usage of both conventional and alternative public-key algorithms, in which case it MAY mark these extensions as critical.  The reasons why a PKI may want to do this are outside the scope of this document.
+      </t>
+      <section title="Post-Quantum Security Considerations">
+        <t>
+While this document is intended to facilitate transitioning a PKI from a classical public-key algorithm to a quantum-safe public-key algorithm, with the transition completing before the development of quantum computers capable of breaking classical public-key algorithms, it is worth discussing security considerations if multiple public-key algorithm certificates are used in the presence of a quantum-enabled adversary.
+        </t>
+        <t>
+A quantum-enabled adversary is expected to be able to forge signatures for certificates and CRLs using classically secure signature algorithms.  Thus, a CA SHOULD add an alternative signature to any certificate it issues if the issuing certificate contains a SubjectAltPublicKeyInfoExt extension.  If the trust anchor is not a certificate, the alternative signature SHOULD be added if the trust anchor has an associated alternative public key which could be used for verification.  Similarly, when verifying certificates or CRLs an application SHOULD reject certificates or CRLs if they don't contain an alternative signature but the issuer certificate does contain a SubjectAltPublicKeyInfoExt or the trust anchor has an alternative public key.  If the CA does not add the alternative signature in these cases, and an upgraded application does not take this precaution when verifying, then a quantum-enabled adversary could create a certificate or CRL without an alternative signature, and forge the conventional signature of any issuer, causing upgraded applications to accept forged credentials.
+        </t>
+        <t>
+If an upgraded relying party processing a non-multiple public-key algorithm CRL encounters a multiple public-key algorithm certificate (containing an AltSignatureValueExt extension) in the list of revoked certificates, it SHOULD NOT treat that certificate as revoked.  If the conventional signature of the CRL uses a non-quantum-safe signature algorithm (e.g. RSA or ECDSA), a quantum-enabled attacker may have forged the CRL, thereby revoking certificates that the CA didn't intend to revoke.  If one of those certificates has the multiple public-key algorithm extension then it was intended to be processed using the alternative public-key algorithm and should not be revoked based on only the results of the conventional public-key algorithm.
+        </t>
+      </section> <!-- Security Considerations -->
+    </section> <!-- Security Considerations -->
+  </middle>
+  <back>
+    <references title="Normative References">
+      &RFC2119;
+      &RFC2986;
+      &RFC5280;
+    </references>
+    <section title="ASN.1 Structures and OIDs">
+      <t>
+This appendix includes all of the ASN.1 type and value definitions
+introduced in this document.
+      </t>
+      <figure><artwork><![CDATA[
+DEFINITIONS IMPLICIT TAGS ::= BEGIN
+
+-- EXPORTS All --
+-- IMPORTS NONE --
+
+-- Object Identifiers for the certificate extensions introduced in
+-- Section 4.
+
+id-subjectAltPublicKeyInfo OBJECT IDENTIFIER  ::=  { TBD }
+
+id-altSignatureAlgorithm OBJECT IDENTIFIER  ::=  { TBD }
+
+id-altSignatureValue OBJECT IDENTIFIER  ::=  { TBD }
+      ]]></artwork></figure>
+      <figure><artwork><![CDATA[
+-- X.509 Certificate extensions
+
+SubjectAltPublicKeyInfoExt  ::=  SEQUENCE  {
+     algorithm                  AlgorithmIdentifier,
+     subjectAltPublicKey        BIT STRING }
+
+AltSignatureAlgorithmExt  ::=  AlgorithmIdentifier
+
+AltSignatureValueExt  ::=  BIT STRING
+      ]]></artwork></figure>
+      <figure><artwork><![CDATA[
+-- attribute data types
+
+subjectAltPublicKeyInfoAttr ATTRIBUTE  ::=  {
+     WITH SYNTAX SubjectPublicKeyInfo
+     ID id-subjectAltPublicKeyInfo }
+      ]]></artwork></figure>
+      <figure><artwork><![CDATA[
+altSignatureAlgorithmAttr ATTRIBUTE  ::=  {
+     WITH SYNTAX AlgorithmIdentifier
+     ID id-altSignatureAlgorithm }
+      ]]></artwork></figure>
+      <figure><artwork><![CDATA[
+altSignatureValueAttr ATTRIBUTE  ::=  {
+     WITH SYNTAX BIT STRING
+     EQUALITY MATCHING RULE bitStringMatch
+     ID id-altSignatureValue }
+
+END
+      ]]></artwork></figure>
+    </section> <!-- ASN.1 Structures and OIDs -->
+    <section title="Upgrading PKI and Dependent Systems">
+      <t>
+One way to upgrade these systems is to employ a "top down" approach: First the root CA is upgraded, then the same is done for any subordinate CAs, and finally for end entities.  The dependent applications can then be upgraded in phases, where the upgraded applications can switch to using the new public-key algorithms while non-upgraded systems can continue using the old public-key algorithms.
+      </t>
+    </section> <!-- Upgrading PKI and Dependent Systems -->
+    <section title="Options for Alternative Algorithms">
+      <t>
+Out of all branches of mathematics thought to be suitable for quantum-safe cryptographic algorithm development, the theory of hash functions, specifically hash-based signatures are currently the most trusted in regard to their quantum security assurances.  While the private key state management makes using them challenging in some high-frequency use cases, they are very well suited for roots of trust and code signing; hash-based algorithms can already be used to upgrade CA certificates.  Furthermore, the option will be available to use stateless digital signatures in end-entity certificates when they become available.
+      </t>
+    </section> <!-- Options for Alternative Algorithms -->
+  </back>
+</rfc>
