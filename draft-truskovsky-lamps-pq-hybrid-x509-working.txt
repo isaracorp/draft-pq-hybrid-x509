@@ -3,10 +3,9 @@
 
 
 LAMPS                                                      A. Truskovsky
-Internet-Draft                                               P. Lafrance
-Intended status: Standards Track                            D. Van Geest
-Expires: December 14, 2018                             ISARA Corporation
-                                                              S. Fluhrer
+Internet-Draft                                              D. Van Geest
+Intended status: Standards Track                       ISARA Corporation
+Expires: December 14, 2018                                    S. Fluhrer
                                                            P. Kampanakis
                                                            Cisco Systems
                                                             M. Ounsworth
@@ -48,6 +47,7 @@ Status of This Memo
    material or to cite them other than as "work in progress."
 
    This Internet-Draft will expire on December 14, 2018.
+
 
 
 
@@ -114,7 +114,7 @@ Truskovsky, et al.      Expires December 14, 2018               [Page 2]
 Internet-Draft                    MPKAC                        June 2018
 
 
-   Appendix C.  Options for Alternative Algorithms . . . . . . . . .  22
+   Appendix C.  Options for Alternative Algorithms . . . . . . . . .  23
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  23
 
 1.  Introduction
@@ -132,7 +132,7 @@ Internet-Draft                    MPKAC                        June 2018
    adversaries.
 
    An obvious solution is for relying parties to require multiple
-   certificated to establish trust in an entity.  One could
+   certificates to establish trust in an entity.  One could
    theoretically continue to use certificates as they currently are and
    introduce separate certificates that utilize the new algorithms.
    However, managing different cryptographic algorithms within a single
@@ -1025,6 +1025,9 @@ Internet-Draft                    MPKAC                        June 2018
 
 6.  Acknowledgements
 
+   The authors would like to thank Philip Lafrance and John Gray for
+   their valuable contributions.
+
 7.  IANA Considerations
 
    Extensions in certificates and CRLs are identified using object
@@ -1055,9 +1058,6 @@ Internet-Draft                    MPKAC                        June 2018
    clean separation is made between the old and new signatures.  The new
    signatures have no dependency on the old signatures and no
    understanding of the new signatures is required to compute or verify
-   the old signature.  As such, one could rely on the conventional
-   signature only, the alternative signature only, or both, depending on
-   the policies of the entity.
 
 
 
@@ -1065,6 +1065,10 @@ Truskovsky, et al.      Expires December 14, 2018              [Page 19]
 
 Internet-Draft                    MPKAC                        June 2018
 
+
+   the old signature.  As such, one could rely on the conventional
+   signature only, the alternative signature only, or both, depending on
+   the policies of the entity.
 
    It is paramount that all private keying material be kept secret; a
    subject covered in the Security Considerations section of [RFC5280].
@@ -1109,11 +1113,7 @@ Internet-Draft                    MPKAC                        June 2018
    these cases, and an upgraded application does not take this
    precaution when verifying, then a quantum-enabled adversary could
    create a certificate or CRL without an alternative signature, and
-   forge the conventional signature of any issuer, causing upgraded
-   applications to accept forged credentials.
 
-   If an upgraded relying party processing a non-multiple public-key
-   algorithm CRL encounters a multiple public-key algorithm certificate
 
 
 
@@ -1122,6 +1122,11 @@ Truskovsky, et al.      Expires December 14, 2018              [Page 20]
 Internet-Draft                    MPKAC                        June 2018
 
 
+   forge the conventional signature of any issuer, causing upgraded
+   applications to accept forged credentials.
+
+   If an upgraded relying party processing a non-multiple public-key
+   algorithm CRL encounters a multiple public-key algorithm certificate
    (containing an AltSignatureValueExt extension) in the list of revoked
    certificates, it SHOULD NOT treat that certificate as revoked.  If
    the conventional signature of the CRL uses a non-quantum-safe
@@ -1156,6 +1161,23 @@ Appendix A.  ASN.1 Structures and OIDs
    This appendix includes all of the ASN.1 type and value definitions
    introduced in this document.
 
+
+
+
+
+
+
+
+
+
+
+
+
+Truskovsky, et al.      Expires December 14, 2018              [Page 21]
+
+Internet-Draft                    MPKAC                        June 2018
+
+
    DEFINITIONS IMPLICIT TAGS ::= BEGIN
 
    -- EXPORTS All --
@@ -1169,14 +1191,6 @@ Appendix A.  ASN.1 Structures and OIDs
    id-altSignatureAlgorithm OBJECT IDENTIFIER  ::=  { TBD }
 
    id-altSignatureValue OBJECT IDENTIFIER  ::=  { TBD }
-
-
-
-
-Truskovsky, et al.      Expires December 14, 2018              [Page 21]
-
-Internet-Draft                    MPKAC                        June 2018
-
 
    -- X.509 Certificate extensions
 
@@ -1212,6 +1226,14 @@ Appendix B.  Upgrading PKI and Dependent Systems
    subordinate CAs, and finally for end entities.  The dependent
    applications can then be upgraded in phases, where the upgraded
    applications can switch to using the new public-key algorithms while
+
+
+
+Truskovsky, et al.      Expires December 14, 2018              [Page 22]
+
+Internet-Draft                    MPKAC                        June 2018
+
+
    non-upgraded systems can continue using the old public-key
    algorithms.
 
@@ -1225,15 +1247,6 @@ Appendix C.  Options for Alternative Algorithms
    high-frequency use cases, they are very well suited for roots of
    trust and code signing; hash-based algorithms can already be used to
    upgrade CA certificates.  Furthermore, the option will be available
-
-
-
-
-Truskovsky, et al.      Expires December 14, 2018              [Page 22]
-
-Internet-Draft                    MPKAC                        June 2018
-
-
    to use stateless digital signatures in end-entity certificates when
    they become available.
 
@@ -1242,19 +1255,10 @@ Authors' Addresses
    Alexander Truskovsky
    ISARA Corporation
    560 Westmount Rd N
-   Waterloo, Ontario  N2L 2Y6
-   Canada
-
-   Email: alexander.truskovsky@isara.com
-
-
-   Philip Lafrance
-   ISARA Corporation
-   560 Westmount Rd N
    Waterloo, Ontario  N2L 0A9
    Canada
 
-   Email: philip.lafrance@isara.com
+   Email: alexander.truskovsky@isara.com
 
 
    Daniel Van Geest
@@ -1275,6 +1279,17 @@ Authors' Addresses
    Email: sfluhrer@cisco.com
 
 
+
+
+
+
+
+
+Truskovsky, et al.      Expires December 14, 2018              [Page 23]
+
+Internet-Draft                    MPKAC                        June 2018
+
+
    Panos Kampanakis
    Cisco Systems
    170 West Tasman Drive
@@ -1282,12 +1297,6 @@ Authors' Addresses
    USA
 
    Email: pkampana@cisco.com
-
-
-
-Truskovsky, et al.      Expires December 14, 2018              [Page 23]
-
-Internet-Draft                    MPKAC                        June 2018
 
 
    Mike Ounsworth
@@ -1306,15 +1315,6 @@ Internet-Draft                    MPKAC                        June 2018
    Canada
 
    Email: serge.mister@entrustdatacard.com
-
-
-
-
-
-
-
-
-
 
 
 

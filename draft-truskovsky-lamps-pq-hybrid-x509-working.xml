@@ -31,28 +31,12 @@
       <street>560 Westmount Rd N</street>
       <city>Waterloo</city>
       <region>Ontario</region>
-      <code>N2L 2Y6</code>
-      <country>Canada</country>
-        </postal>
-<!-- <phone/> -->
-<!-- <facsimile/> -->
-      <email>alexander.truskovsky@isara.com</email>
-<!-- <uri/> -->
-      </address>
-    </author>
-    <author fullname="Philip Lafrance" initials="P" surname="Lafrance">
-      <organization>ISARA Corporation</organization>
-      <address>
-        <postal>
-      <street>560 Westmount Rd N</street>
-      <city>Waterloo</city>
-      <region>Ontario</region>
       <code>N2L 0A9</code>
       <country>Canada</country>
         </postal>
 <!-- <phone/> -->
 <!-- <facsimile/> -->
-      <email>philip.lafrance@isara.com</email>
+      <email>alexander.truskovsky@isara.com</email>
 <!-- <uri/> -->
       </address>
     </author>
@@ -155,7 +139,7 @@ This document describes a method of embedding alternative sets of cryptographic 
 Modern Public Key Infrastructure (PKI) extensively relies on classical signature algorithms such as RSA or ECDSA to achieve secure authentication.  The security of these algorithms is based on the time-tested difficulty of certain number-theoretic problems.  However, it is well known that such schemes offer insufficient security against an adversary in possession of a universal quantum computer.  Such an adversary can efficiently recover the private key from the public key and impersonate any entity in the system -- even a root Certification Authority (CA).  Hence, it is necessary to upgrade these PKIs to utilize algorithms that are secure against such adversaries.
       </t>
       <t>
-An obvious solution is for relying parties to require multiple certificated to establish trust in an entity.  One could theoretically continue to use certificates as they currently are and introduce separate certificates that utilize the new algorithms.  However, managing different cryptographic algorithms within a single PKI in this way requires multiple certificate chains.  This would greatly increase the complexity of the already complex system.  Furthermore, some systems rely on physical solutions for credential storage.  These physical solutions may be limited in terms of capacity as well as in terms of how such systems are interacted with.  Instead, it is far simpler to keep only a single identity and employ a single certificate chain for each user.
+An obvious solution is for relying parties to require multiple certificates to establish trust in an entity.  One could theoretically continue to use certificates as they currently are and introduce separate certificates that utilize the new algorithms.  However, managing different cryptographic algorithms within a single PKI in this way requires multiple certificate chains.  This would greatly increase the complexity of the already complex system.  Furthermore, some systems rely on physical solutions for credential storage.  These physical solutions may be limited in terms of capacity as well as in terms of how such systems are interacted with.  Instead, it is far simpler to keep only a single identity and employ a single certificate chain for each user.
       </t>
       <t>
 The goal of this document is to profile new X.509v3 certificate extensions, X.509v2 CRL extensions and PKCS #10 CSR attributes that facilitate the use of a simple and efficient approach for executing this upgrade.  A key design requirement for this approach is to not affect the behavior of non-upgraded systems and ensure they can process any new attributes or extensions without breaking.
@@ -698,6 +682,7 @@ In addition to verifying the alternative signature of a CRL, an implementation a
     </section> <!-- Multiple Public-Key Algorithm Certificate Revocation Lists -->
     <section anchor="Acknowledgements" title="Acknowledgements">
       <t>
+The authors would like to thank Philip Lafrance and John Gray for their valuable contributions.
       </t>
     </section> <!-- Acknowledgements -->
     <section anchor="IANA" title="IANA Considerations">
@@ -731,7 +716,7 @@ A quantum-enabled adversary is expected to be able to forge signatures for certi
         <t>
 If an upgraded relying party processing a non-multiple public-key algorithm CRL encounters a multiple public-key algorithm certificate (containing an AltSignatureValueExt extension) in the list of revoked certificates, it SHOULD NOT treat that certificate as revoked.  If the conventional signature of the CRL uses a non-quantum-safe signature algorithm (e.g. RSA or ECDSA), a quantum-enabled attacker may have forged the CRL, thereby revoking certificates that the CA didn't intend to revoke.  If one of those certificates has the multiple public-key algorithm extension then it was intended to be processed using the alternative public-key algorithm and should not be revoked based on only the results of the conventional public-key algorithm.
         </t>
-      </section> <!-- Security Considerations -->
+      </section> <!-- Post-Quantum Security Considerations -->
     </section> <!-- Security Considerations -->
   </middle>
   <back>
